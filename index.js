@@ -35,7 +35,7 @@ app.post('/api/cv/upload', upload.single('cv'), async (req, res) => {
 // Get All CVs - GET /api/cv/all
 app.get('/api/cv/all', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, filename, filetype, uploadedat FROM cv_db ORDER BY uploadedat DESC');
+    const result = await pool.query('SELECT id, filename, filetype, uploaded_at FROM cv_db ORDER BY uploaded_at DESC');
     res.json(result.rows);
   } catch (error) {
     console.error('Get all error:', error);
