@@ -4,10 +4,18 @@ const pool = require("./db");
 const app = express();
 const cors = require("cors");
 const PORT = 3000;
+const fs = require("fs");
+const os = require("os");
 
-// Configure Multer
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const path = require("path");
+
+// Multer setup
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "resume"),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+});
+const upload = multer({ storage: multer.memoryStorage() });
+const CvParser = require("./CvParser");
 
 app.use(cors());
 
@@ -24,8 +32,8 @@ app.post("/api/cv/upload", upload.single("file"), async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO cv_db (filename, filetype, data, uploaded_at)
-       VALUES ($1, $2, $3, NOW()) RETURNING id`,
-      [file.originalname, file.mimetype, file.size]
+       VALUES ($1, $2, $3::bytea, NOW()) RETURNING id`,
+      [file.originalname, file.mimetype, file.buffer]
     );
 
     console.log("query: ", result);
@@ -65,6 +73,7 @@ app.get("/api/cv/download/:id", async (req, res) => {
     }
 
     const file = result.rows[0];
+    console.log("file from download api: ", file);
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="${file.filename}"`
@@ -79,7 +88,53 @@ app.get("/api/cv/download/:id", async (req, res) => {
   }
 });
 
-// Start server
+// const textract = require("textract");
+
+// textract.config = {
+//   pdftotext: {
+//     path: "C:Program Filespoppler-24.08.0Library\binpdftotext.exe", // <-- Use your actual path here
+//   },
+// };
+
+// textract.fromFileWithPath("functionalSample.pdf", (error, text) => {
+//   if (error) {
+//     console.error("Extraction failed:", error);
+//   } else {
+//     console.log("Extracted text:\n", text);
+//   }
+// });
+
+// Ensure 'converted' folder exists
+if (!fs.existsSync(path.join(__dirname, "converted"))) {
+  fs.mkdirSync(path.join(__dirname, "converted"));
+}
+
+// Upload route
+app.post("/parse", upload.single("resume"), async (req, res) => {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({
+        success: false,
+        error: "No file uploaded",
+      });
+    }
+
+    // Write buffer to temp file
+    const tempFilePath = path.join(os.tmpdir(), req.file.originalname);
+    fs.writeFileSync(tempFilePath, req.file.buffer);
+
+    // Parse CV
+    const result = await CvParser(tempFilePath);
+
+    // Clean up file
+    fs.unlinkSync(tempFilePath);
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Resume parser API running at http://localhost:${PORT}`);
 });
