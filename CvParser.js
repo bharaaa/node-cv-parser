@@ -8,8 +8,9 @@ const CvParser = async (file) => {
     console.log("Parsing file:", file);
 
     const resume = new ResumeParser(file);
-    const parsed = await resume.parseToJSON(); // returns Resume object
-    const data = parsed.parts; // get actual parsed content
+    const parsed = await resume.parseToJSON();
+    const data = parsed.parts;
+    Object.assign(data); // Merge it in
 
     console.log("data: ", data);
 

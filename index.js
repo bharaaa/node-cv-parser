@@ -79,30 +79,12 @@ app.get("/api/cv/download/:id", async (req, res) => {
       `attachment; filename="${file.filename}"`
     );
     res.setHeader("Content-Type", file.filetype);
-    // const binaryData = Buffer.from(file.data, "binary");
-    // console.log(binaryData);
     res.send(file.data);
   } catch (error) {
     console.error("Download error:", error);
     res.status(500).send("Error downloading file.");
   }
 });
-
-// const textract = require("textract");
-
-// textract.config = {
-//   pdftotext: {
-//     path: "C:Program Filespoppler-24.08.0Library\binpdftotext.exe", // <-- Use your actual path here
-//   },
-// };
-
-// textract.fromFileWithPath("functionalSample.pdf", (error, text) => {
-//   if (error) {
-//     console.error("Extraction failed:", error);
-//   } else {
-//     console.log("Extracted text:\n", text);
-//   }
-// });
 
 // Ensure 'converted' folder exists
 if (!fs.existsSync(path.join(__dirname, "converted"))) {
@@ -111,27 +93,25 @@ if (!fs.existsSync(path.join(__dirname, "converted"))) {
 
 // Upload route
 app.post("/parse", upload.single("resume"), async (req, res) => {
+  let tempFilePath = "";
   try {
-    if (!req.file || !req.file.buffer) {
-      return res.status(400).json({
-        success: false,
-        error: "No file uploaded",
-      });
-    }
-
-    // Write buffer to temp file
     const tempFilePath = path.join(os.tmpdir(), req.file.originalname);
     fs.writeFileSync(tempFilePath, req.file.buffer);
 
-    // Parse CV
     const result = await CvParser(tempFilePath);
-
-    // Clean up file
-    fs.unlinkSync(tempFilePath);
 
     res.json(result);
   } catch (err) {
+    console.error("🔥 /parse error:", err);
     res.status(500).json({ success: false, error: err.message });
+  } finally {
+    try {
+      if (fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath);
+      }
+    } catch (cleanupErr) {
+      console.warn("⚠️ Temp file cleanup failed:", cleanupErr.message);
+    }
   }
 });
 
