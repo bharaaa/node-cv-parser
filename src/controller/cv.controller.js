@@ -24,7 +24,7 @@ exports.uploadCV = async (req, res) => {
   }
 };
 
-exports.getAllCVs = async (req, res) => {
+exports.getAllCV = async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM cv_db ORDER BY uploaded_at DESC");
     res.status(200).json(result.rows);
