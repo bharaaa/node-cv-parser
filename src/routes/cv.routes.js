@@ -9,5 +9,6 @@ router
   .post(upload.single("file"), cvController.uploadCV); // POST /api/cv
 router.get("/download/:id", cvController.downloadCV);
 router.post("/parse", upload.single("resume"), cvController.parseCV);
+router.get("/parse/:id", cvController.parseById);
 
 module.exports = router;

@@ -3,7 +3,6 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const CvParser = require("../service/cvParser.service");
-const mapParsedData = require("../service/cvMapping.service");
 
 exports.uploadCV = async (req, res) => {
   try {
@@ -25,11 +24,9 @@ exports.uploadCV = async (req, res) => {
   }
 };
 
-exports.getAllCV = async (req, res) => {
+exports.getAllCVs = async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM cv_db ORDER BY uploaded_at DESC"
-    );
+    const result = await pool.query("SELECT * FROM cv_db ORDER BY uploaded_at DESC");
     res.status(200).json(result.rows);
   } catch (error) {
     console.error("Get all error:", error);
@@ -51,10 +48,7 @@ exports.downloadCV = async (req, res) => {
     }
 
     const file = result.rows[0];
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${file.filename}"`
-    );
+    res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
     res.setHeader("Content-Type", file.filetype);
     res.send(file.data);
   } catch (error) {
@@ -85,36 +79,5 @@ exports.parseCV = async (req, res) => {
     } catch (cleanupErr) {
       console.warn("⚠️ Temp file cleanup failed:", cleanupErr.message);
     }
-  }
-};
-
-/**
- * Parse file directly from DB by ID
- */
-exports.parseById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await pool.query(
-      "SELECT filename, filetype, data FROM cv_db WHERE id = $1",
-      [id]
-    );
-
-    if (result.rows.length === 0) return res.status(404).send("File not found");
-
-    const { filename, data } = result.rows[0];
-    const tempPath = path.join(os.tmpdir(), filename);
-    fs.writeFileSync(tempPath, data);
-
-    const parsed = await CvParser(tempPath);
-    if (!parsed.success) throw new Error(parsed.error);
-
-    const mapped = mapParsedData(parsed.data);
-
-    fs.unlinkSync(tempPath);
-    res.json({ success: true, data: mapped });
-  } catch (err) {
-    console.error("Parse by ID error:", err.message);
-    res.status(500).json({ success: false, error: err.message });
   }
 };
