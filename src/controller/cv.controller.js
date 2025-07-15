@@ -4,6 +4,7 @@ const os = require("os");
 const path = require("path");
 const CvParser = require("../service/cvParser.service");
 const mapCV = require("../service/cvMapping.service");
+const extractTextFromPDF = require("../utils/extractTextFromPdf");
 
 exports.uploadCV = async (req, res) => {
   try {
@@ -100,19 +101,28 @@ exports.parseById = async (req, res) => {
       [id]
     );
 
-    if (result.rows.length === 0) return res.status(404).send("CV not found");
+    if (result.rows.length === 0) {
+      return res.status(404).send("CV not found");
+    }
 
     const { filename, data } = result.rows[0];
+
+    // Step 1: Write to temp file
     const tempPath = path.join(os.tmpdir(), `${Date.now()}_${filename}`);
     fs.writeFileSync(tempPath, data);
 
-    const parsed = await CvParser(tempPath);
+    // Step 2: Read raw text from file (e.g., pdf-to-text)
+    const rawText = await extractTextFromPDF(tempPath);
+    // console.log("rawText from parseById: ", rawText);
+
+    // Step 3: Parse using CvParser (expects rawText)
+    const parsed = await CvParser(rawText); // ✅ correct usage now
     if (!parsed.success) throw new Error(parsed.error);
 
-    const mapped = mapCV(parsed.data, parsed.rawText || "");
-    fs.unlinkSync(tempPath);
+    // Step 4: Map structured output
+    const mapped = mapCV(parsed.data, rawText);
 
-    console.log("parsed data from parseById: ", mapped);
+    fs.unlinkSync(tempPath); // clean up
 
     res.json({ success: true, data: mapped });
   } catch (err) {

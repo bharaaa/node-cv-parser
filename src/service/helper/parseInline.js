@@ -10,4 +10,4 @@ function parseInline(Resume, row) {
   }
 }
 
-module.exports = parseInline;
+module.exports = { parseInline };

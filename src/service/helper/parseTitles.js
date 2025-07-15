@@ -31,4 +31,4 @@ function parseTitles(Resume, rows) {
   }
 }
 
-module.exports = parseTitles;
+module.exports = { parseTitles };

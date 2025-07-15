@@ -1,6 +1,10 @@
-const ResumeParser = require("simple-resume-parser");
-const fs = require("fs");
-const path = require("path");
+const Resume = require("../model/resume");
+const dictionary = require("../service/dictionary");
+const { parseRegular } = require("./helper/parseRegular");
+const { parseProfiles } = require("./helper/parseProfiles");
+const { parseTitles } = require("./helper/parseTitles");
+const { parseInline } = require("./helper/parseInline");
+const extractSkillsFromText = require("../utils/extractSkills");
 
 // const CvParser = async (file) => {
 //   try {
@@ -31,12 +35,13 @@ const path = require("path");
 //   }
 // };
 
-const CvParser = (rawText) => {
+const CvParser = async (rawText) => {
   try {
     if (!rawText) throw new Error("No resume text provided");
 
     const resume = new Resume();
     const rows = rawText.split("\n").map((line) => line.trim());
+    console.log("row from CvParser: ", rows);
 
     // 1. Regex search on the entire file (name, email, etc.)
     parseRegular(rawText, resume);
@@ -48,11 +53,16 @@ const CvParser = (rawText) => {
       rows[i] = parseProfiles(row, resume);
 
       // 3. Extract section titles (education, work experience, etc.)
-      parseTitles(rows, i, resume);
+      parseTitles(row, resume);
 
       // 4. Inline values like "Phone: 08123"
       parseInline(row, resume);
     }
+
+    const extractedSkills = extractSkillsFromText(rawText);
+    resume.addKey("skills", extractedSkills.join(", "));
+
+    console.log("final parsed resume: ", resume.parts);
 
     return resume.parts;
   } catch (error) {
