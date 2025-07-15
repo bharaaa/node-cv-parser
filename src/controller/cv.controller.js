@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const CvParser = require("../service/cvParser.service");
-const mapParsedData = require("../service/cvMapping.service");
+const mapCV = require("../service/cvMapping.service");
 
 exports.uploadCV = async (req, res) => {
   try {
@@ -100,21 +100,23 @@ exports.parseById = async (req, res) => {
       [id]
     );
 
-    if (result.rows.length === 0) return res.status(404).send("File not found");
+    if (result.rows.length === 0) return res.status(404).send("CV not found");
 
     const { filename, data } = result.rows[0];
-    const tempPath = path.join(os.tmpdir(), filename);
+    const tempPath = path.join(os.tmpdir(), `${Date.now()}_${filename}`);
     fs.writeFileSync(tempPath, data);
 
     const parsed = await CvParser(tempPath);
     if (!parsed.success) throw new Error(parsed.error);
 
-    const mapped = mapParsedData(parsed.data);
-
+    const mapped = mapCV(parsed.data, parsed.rawText || "");
     fs.unlinkSync(tempPath);
+
+    console.log("parsed data from parseById: ", mapped);
+
     res.json({ success: true, data: mapped });
   } catch (err) {
-    console.error("Parse by ID error:", err.message);
+    console.error("❌ Error in parseById:", err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 };

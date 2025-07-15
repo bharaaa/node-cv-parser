@@ -9,6 +9,7 @@ const CvParser = async (file) => {
     const resume = new ResumeParser(file);
     const parsed = await resume.parseToJSON();
     const data = parsed.parts;
+    console.log("parsed data from simpleresumeparser: ", parsed);
 
     if (data.profiles && !/^https?:\/\//i.test(data.profiles)) {
       data.profiles = "https://" + data.profiles;
