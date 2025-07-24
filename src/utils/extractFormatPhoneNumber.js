@@ -1,4 +1,4 @@
-function formatPhoneNumber(text) {
+function extractFormatPhoneNumber(text) {
   if (!text) return "";
 
   const match = text.match(/\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/);
@@ -18,4 +18,4 @@ function formatPhoneNumber(text) {
   return "+".concat(cleaned.slice(0, 2), "-", cleaned.slice(2));
 }
 
-module.exports = formatPhoneNumber;
+module.exports = extractFormatPhoneNumber;
