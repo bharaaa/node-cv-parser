@@ -1,6 +1,6 @@
-const cities = require("../service/helper/dictionary/cities");
-const educations = require("../service/helper/dictionary/education");
-const degrees = require("../service/helper/dictionary/degree");
+const cities = require("./helper/dictionary/cities");
+const educations = require("./helper/dictionary/education");
+const degrees = require("./helper/dictionary/degree");
 
 const cityRegex = new RegExp(`\\b(${cities.join("|")})\\b`, "i");
 const educationsRegex = new RegExp(`\\b(${educations.join("|")})\\b`, "i");

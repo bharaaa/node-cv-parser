@@ -1,4 +1,4 @@
-const dictionary = require("../dictionary");
+const dictionary = require("../dictionaryRule");
 
 function parseProfiles(line, resume) {
   for (let profile of dictionary.profiles) {

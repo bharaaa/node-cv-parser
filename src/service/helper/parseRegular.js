@@ -1,4 +1,4 @@
-const dictionary = require("../dictionary");
+const dictionary = require("../dictionaryRule");
 
 function parseRegular(text, resume) {
   const regular = dictionary.regular;

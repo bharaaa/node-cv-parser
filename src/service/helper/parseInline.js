@@ -1,4 +1,4 @@
-const dictionary = require("../dictionary");
+const dictionary = require("../dictionaryRule");
 
 function parseInline(Resume, row) {
   for (const [key, expr] of Object.entries(dictionary.inline)) {

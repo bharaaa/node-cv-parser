@@ -1,4 +1,4 @@
-const dictionary = require("../dictionary");
+const dictionary = require("../dictionaryRule");
 const { countWords, restoreTextByRows } = require("./utils");
 
 function parseTitles(Resume, rows) {

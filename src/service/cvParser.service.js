@@ -1,5 +1,5 @@
 const Resume = require("../model/resume");
-const dictionary = require("../service/dictionary");
+const dictionary = require("./dictionaryRule");
 const { parseRegular } = require("./helper/parseRegular");
 const { parseProfiles } = require("./helper/parseProfiles");
 const { parseTitles } = require("./helper/parseTitles");
