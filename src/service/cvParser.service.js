@@ -6,6 +6,7 @@ const { parseTitles } = require("./helper/parseTitles");
 const { parseInline } = require("./helper/parseInline");
 const extractSkillsFromText = require("../utils/extractSkills");
 const extractNameFromText = require("../utils/extractName");
+const formatPhoneNumber = require("../utils/formatPhoneNumber");
 
 // const CvParser = async (file) => {
 //   try {
@@ -65,6 +66,9 @@ const CvParser = async (rawText) => {
 
     const extractedSkills = extractSkillsFromText(rawText);
     resume.addKey("skills", extractedSkills.join(", "));
+
+    const extractedPhone = formatPhoneNumber(rawText);
+    resume.addKey("phone", extractedPhone);
 
     console.log("final parsed resume: ", resume.parts);
 

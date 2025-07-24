@@ -10,7 +10,7 @@ module.exports = {
   regular: {
     name: [], // extract using extractName utils
     email: [/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/],
-    phone: [/\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/],
+    phone: [],
     domicile: [cityRegex],
     educations: [educationsRegex],
     degree: [degreeRegex],
