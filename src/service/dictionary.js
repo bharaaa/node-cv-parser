@@ -8,7 +8,7 @@ const degreeRegex = new RegExp(`\\b(${degrees.join("|")})\\b`, "i");
 
 module.exports = {
   regular: {
-    name: [/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/],
+    name: [], // extract using extractName utils
     email: [/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/],
     phone: [/\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/],
     domicile: [cityRegex],

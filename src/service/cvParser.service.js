@@ -5,6 +5,7 @@ const { parseProfiles } = require("./helper/parseProfiles");
 const { parseTitles } = require("./helper/parseTitles");
 const { parseInline } = require("./helper/parseInline");
 const extractSkillsFromText = require("../utils/extractSkills");
+const extractNameFromText = require("../utils/extractName");
 
 // const CvParser = async (file) => {
 //   try {
@@ -58,6 +59,9 @@ const CvParser = async (rawText) => {
       // 4. Inline values like "Phone: 08123"
       parseInline(row, resume);
     }
+
+    const extractedname = extractNameFromText(rawText);
+    resume.addKey("name", extractedname);
 
     const extractedSkills = extractSkillsFromText(rawText);
     resume.addKey("skills", extractedSkills.join(", "));

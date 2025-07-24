@@ -6,7 +6,6 @@ const {
 } = require("../utils/textHelper");
 const { regexes } = require("../utils/regexes");
 
-
 /**
  * Maps raw parsed data into structured fields.
  * @param {Object} parsedData
