@@ -2,7 +2,6 @@ function extractFormatPhoneNumber(text) {
   if (!text) return "";
 
   const match = text.match(/\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/);
-  console.log("Match Phone Number: ", match);
 
   // Remove all non-digit characters
   let cleaned = match[0].replace(/\D/g, "");

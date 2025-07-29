@@ -1,4 +1,8 @@
 module.exports = [
+  "Jakarta Utara",
+  "Jakarta Timur",
+  "Jakarta Selatan",
+  "Jakarta Pusat",
   "Jakarta",
   "Surabaya",
   "Bandung",

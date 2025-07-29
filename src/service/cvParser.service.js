@@ -43,7 +43,6 @@ const CvParser = async (rawText) => {
 
     const resume = new Resume();
     const rows = rawText.split("\n").map((line) => line.trim());
-    console.log("row from CvParser: ", rows);
 
     // 1. Regex search on the entire file (name, email, etc.)
     parseRegular(rawText, resume);

@@ -116,7 +116,7 @@ exports.parseById = async (req, res) => {
     // console.log("rawText from parseById: ", rawText);
 
     // Step 3: Parse using CvParser (expects rawText)
-    const parsed = await CvParser(rawText); // ✅ correct usage now
+    const parsed = await CvParser(rawText);
     if (!parsed.success) throw new Error(parsed.error);
 
     // Step 4: Map structured output
@@ -126,7 +126,7 @@ exports.parseById = async (req, res) => {
 
     res.json({ success: true, data: mapped });
   } catch (err) {
-    console.error("❌ Error in parseById:", err.message);
+    console.error("Error in parseById:", err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 };

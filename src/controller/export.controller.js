@@ -72,7 +72,7 @@ exports.exportExtractedToExcel = async (req, res) => {
       fs.unlinkSync(excelPath);
     });
   } catch (err) {
-    console.error("❌ Backend Excel Export Error:", err);
+    console.error("Backend Excel Export Error:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };
