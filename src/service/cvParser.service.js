@@ -71,7 +71,7 @@ const CvParser = async (rawText) => {
 
     console.log("final parsed resume: ", resume.parts);
 
-    return resume.parts;
+    return { success: true, data: resume.parts };
   } catch (error) {
     console.error("CvParser error:", error);
     return { success: false, error: error.message };

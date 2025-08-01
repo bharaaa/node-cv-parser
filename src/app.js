@@ -4,9 +4,15 @@ const cvRoutes = require("./routes/cv.routes");
 const fs = require("fs");
 const path = require("path");
 const cleanupKeepLatest = require("./utils/cleanupFolder");
-
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: "http://localhost:4001",
+  credentials: true,
+};
+
+// app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/cv", cvRoutes);
