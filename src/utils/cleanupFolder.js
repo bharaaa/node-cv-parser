@@ -23,7 +23,7 @@ const cleanupFolder = (folderPath, keepCount) => {
   filesToDelete.forEach(({ file }) => {
     const filePath = path.join(folderPath, file);
     fs.unlinkSync(filePath);
-    console.log(`🧹 Deleted: ${filePath}`);
+    console.log(`Deleted: ${filePath}`);
   });
 };
 

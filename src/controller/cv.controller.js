@@ -76,7 +76,7 @@ exports.parseCV = async (req, res) => {
 
     res.json(result);
   } catch (err) {
-    console.error("🔥 /parse error:", err);
+    console.error("parse error:", err);
     res.status(500).json({ success: false, error: err.message });
   } finally {
     try {
@@ -84,7 +84,7 @@ exports.parseCV = async (req, res) => {
         fs.unlinkSync(tempFilePath);
       }
     } catch (cleanupErr) {
-      console.warn("⚠️ Temp file cleanup failed:", cleanupErr.message);
+      console.warn("Temp file cleanup failed:", cleanupErr.message);
     }
   }
 };
