@@ -25,6 +25,8 @@ const informalEduRegex = new RegExp(
   "i"
 );
 
+const gpaRegex = /\b(?:GPA|IPK)[:\s]*([0-4](?:\.\d{1,2})?)\b/i;
+
 module.exports = {
   regular: {
     name: [], // extract using extractName utils
@@ -36,6 +38,7 @@ module.exports = {
     fieldOfStudy: [fieldOfStudyRegex],
     degree: [degreeRegex],
     informalEdu: [informalEduRegex],
+    gpa: [gpaRegex],
   },
   inline: {},
   titles: {
