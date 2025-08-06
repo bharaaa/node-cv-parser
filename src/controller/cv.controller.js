@@ -117,7 +117,6 @@ exports.parseById = async (req, res) => {
 
     // Step 3: Parse using CvParser (expects rawText)
     const parsed = await CvParser(rawText);
-    console.log("final parsed resume: ", parsed);
     if (!parsed.success) throw new Error(parsed.error);
 
     // // Step 4: Map structured output

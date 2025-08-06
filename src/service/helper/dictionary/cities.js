@@ -5,6 +5,7 @@ module.exports = [
   "Jakarta Pusat",
   "Jakarta",
   "Surabaya",
+  "Sidoarjo",
   "Bandung",
   "Medan",
   "Bekasi",

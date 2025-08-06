@@ -13,6 +13,20 @@ class Resume {
       this.parts[key] = value;
     }
   }
+  getKey(...keys) {
+    let combined = [];
+
+    for (const key of keys) {
+      const value = this.parts[key];
+      if (Array.isArray(value)) {
+        combined.push(...value);
+      } else if (value !== undefined && value !== null) {
+        combined.push(value);
+      }
+    }
+
+    return combined.length > 0 ? combined : null;
+  }
 }
 
 module.exports = Resume;

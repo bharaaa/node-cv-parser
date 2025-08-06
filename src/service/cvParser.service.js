@@ -7,6 +7,8 @@ const { parseInline } = require("./helper/parseInline");
 const extractSkillsFromText = require("../utils/extractSkills");
 const extractNameFromText = require("../utils/extractName");
 const extractFormatPhoneNumber = require("../utils/extractFormatPhoneNumber");
+const extractEducation = require("../utils/extractEducation");
+const convertMonthYearToMMyyyy = require("../utils/convertMonthYearToMmyyyy");
 
 // const CvParser = async (file) => {
 //   try {
@@ -63,13 +65,25 @@ const CvParser = async (rawText) => {
     const extractedname = extractNameFromText(rawText);
     resume.addKey("name", extractedname);
 
-    // const extractedSkills = extractSkillsFromText(rawText);
-    // resume.addKey("skills", extractedSkills.join(", "));
+    const extractedSkills = extractSkillsFromText(rawText);
+    resume.addKey("skills", extractedSkills.join(", "));
 
     const extractedPhone = extractFormatPhoneNumber(rawText);
     resume.addKey("phone", extractedPhone);
 
+    const extractedRawSkills = resume.getKey("rawSkills", "skills");
+    console.log("extractedrawskills: ", extractedRawSkills.toString());
     console.log("final parsed resume: ", resume.parts);
+
+    const educationEntries = extractEducation(resume.getKey("educationParts"));
+
+    const startDates = educationEntries.map((entry) => entry.startDate);
+    const convertedStartDate = convertMonthYearToMMyyyy(startDates.toString());
+    resume.addKey("eduStartDate", convertedStartDate);
+
+    const endDates = educationEntries.map((entry) => entry.endDate);
+    const convertedEndDate = convertMonthYearToMMyyyy(endDates.toString());
+    resume.addKey("eduEndDate", convertedEndDate);
 
     return { success: true, data: resume.parts };
   } catch (error) {
