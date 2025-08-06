@@ -54,17 +54,17 @@ const CvParser = async (rawText) => {
       rows[i] = parseProfiles(row, resume);
 
       // 3. Extract section titles (education, work experience, etc.)
-      parseTitles(row, resume);
 
       // 4. Inline values like "Phone: 08123"
       parseInline(row, resume);
     }
+    parseTitles(resume, rows);
 
     const extractedname = extractNameFromText(rawText);
     resume.addKey("name", extractedname);
 
-    const extractedSkills = extractSkillsFromText(rawText);
-    resume.addKey("skills", extractedSkills.join(", "));
+    // const extractedSkills = extractSkillsFromText(rawText);
+    // resume.addKey("skills", extractedSkills.join(", "));
 
     const extractedPhone = extractFormatPhoneNumber(rawText);
     resume.addKey("phone", extractedPhone);

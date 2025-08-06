@@ -4,6 +4,7 @@ const educations = require("./helper/dictionary/education");
 const degrees = require("./helper/dictionary/degree");
 const fieldOfStudy = require("./helper/dictionary/fieldOfStudy");
 const informalEdu = require("./helper/dictionary/informalEdu");
+const positions = require("./helper/dictionary/position");
 
 const emailRegex = new RegExp(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/);
 const cityRegex = new RegExp(`\\b(${cities.join("|")})\\b`, "i");
@@ -24,6 +25,7 @@ const informalEduRegex = new RegExp(
   `\\b(${informalEduKeywords.join("|")})\\b`,
   "i"
 );
+const positionRegex = new RegExp(`\\b(${positions.join("|")})\\b`, "i");
 
 const gpaRegex = /\b(?:GPA|IPK)[:\s]*([0-4](?:\.\d{1,2})?)\b/i;
 
@@ -39,11 +41,17 @@ module.exports = {
     degree: [degreeRegex],
     informalEdu: [informalEduRegex],
     gpa: [gpaRegex],
+    lastPosition: [positionRegex],
   },
   inline: {},
   titles: {
     education: ["education", "pendidikan"],
-    experience: ["experience", "pekerjaan", "work history"],
+    experience: ["experience", "pekerjaan", "work history", "pengalaman kerja"],
+    organization: ["organization", "organisasi", "riwayat organisasi"],
+    skills: ["skills", "keahlian"],
+    awards: ["awards", "penghargaan"],
+    projects: ["project", "projects", "proyek"],
+    certificate: ["certificate", "certificates", "sertifikat"]
   },
   profiles: [
     "linkedin.com",

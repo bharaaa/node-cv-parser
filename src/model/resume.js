@@ -1,17 +1,18 @@
 class Resume {
-    constructor() {
-      this.parts = {};
-    }
-  
-    addKey(key, value) {
-      if (!this.parts[key]) {
-        this.parts[key] = value;
-      } else {
-        // Merge if already exists
-        this.parts[key] += "\n" + value;
-      }
+  constructor() {
+    this.parts = {};
+  }
+
+  addKey(key, value) {
+    if (!value) return;
+    if (Array.isArray(this.parts[key])) {
+      this.parts[key].push(value);
+    } else if (this.parts[key]) {
+      this.parts[key] = [this.parts[key], value];
+    } else {
+      this.parts[key] = value;
     }
   }
-  
-  module.exports = Resume;
-  
+}
+
+module.exports = Resume;
