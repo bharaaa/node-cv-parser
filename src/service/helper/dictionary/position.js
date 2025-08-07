@@ -17,6 +17,9 @@ module.exports = [
   "Cloud Engineer",
   "Security Engineer",
   "Programmer",
+  "Software Developer Intern",
+  "Full Stack Developer Intern",
+  "IT Programmer Intern",
 
   // Data & AI Roles
   "Data Scientist",
@@ -85,4 +88,8 @@ module.exports = [
   "Virtual Assistant",
   "Office Manager",
   "Customer Service Representative",
+  "IT Programmer Intern",
+
+  // Others
+  "Bidan",
 ];

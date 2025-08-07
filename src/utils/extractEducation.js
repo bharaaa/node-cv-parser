@@ -2,23 +2,49 @@ const universityList = require("../service/helper/dictionary/education");
 const fieldOfStudyList = require("../service/helper/dictionary/fieldOfStudy");
 
 const gpaRegex = /\b(?:GPA|IPK)[:\s]*([0-4](?:\.\d{1,2})?)\b/i;
-const dateRangeRegex = /\b(\w+\s\d{4})\s?[–-]\s?(\w+\s\d{4}|\(Expected\))/i;
+const dateRangeRegex =
+  /\b((?:\w+\s\d{4})|(?:\d{1,2}[\/-]\d{4}))\s?[–-]\s?((?:\w+\s\d{4})|(?:\d{1,2}[\/-]\d{4})|\(Expected\))/i;
 
 function extractEducation(educationParts) {
   const entries = [];
-  let currentEntry = {};
+
+  let currentEntry = {
+    fieldOfStudy: undefined,
+    description: undefined,
+    degree: undefined,
+    grade: undefined,
+    institution: undefined,
+    eduStartDate: null,
+    eduEndDate: null,
+  };
 
   for (let i = 0; i < educationParts.length; i++) {
-    const line = educationParts[i];
+    const line = educationParts[i].trim();
 
     // Check for university name
     const matchedUniversity = universityList.find((uni) =>
       line.toLowerCase().includes(uni.toLowerCase())
     );
     if (matchedUniversity) {
-      // Push previous if filled
-      if (Object.keys(currentEntry).length > 0) entries.push(currentEntry);
-      currentEntry = { institution: matchedUniversity };
+      // If currentEntry already has values, push and reset
+      if (
+        currentEntry.institution ||
+        currentEntry.fieldOfStudy ||
+        currentEntry.eduStartDate ||
+        currentEntry.grade
+      ) {
+        entries.push(currentEntry);
+        currentEntry = {
+          fieldOfStudy: undefined,
+          description: undefined,
+          degree: undefined,
+          grade: undefined,
+          institution: undefined,
+          eduStartDate: null,
+          eduEndDate: null,
+        };
+      }
+      currentEntry.institution = matchedUniversity;
     }
 
     // Check for field of study
@@ -34,19 +60,34 @@ function extractEducation(educationParts) {
     // Check for GPA
     const gpaMatch = line.match(gpaRegex);
     if (gpaMatch) {
-      currentEntry.gpa = gpaMatch[1];
+      currentEntry.grade = gpaMatch[1];
     }
 
     // Check for date range
     const dateMatch = line.match(dateRangeRegex);
     if (dateMatch) {
-      currentEntry.startDate = dateMatch[1];
-      currentEntry.endDate = dateMatch[2];
+      currentEntry.eduStartDate = dateMatch[1];
+      currentEntry.eduEndDate = dateMatch[2];
     }
+
+    // console.log({
+    //   line,
+    //   matchedUniversity,
+    //   matchedField,
+    //   gpaMatch,
+    //   dateMatch,
+    // });
   }
 
-  // Push the last entry
-  if (Object.keys(currentEntry).length > 0) entries.push(currentEntry);
+  // Push the last entry if it has data
+  if (
+    currentEntry.institution ||
+    currentEntry.fieldOfStudy ||
+    currentEntry.eduStartDate ||
+    currentEntry.grade
+  ) {
+    entries.push(currentEntry);
+  }
 
   return entries;
 }

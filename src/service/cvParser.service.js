@@ -9,6 +9,7 @@ const extractNameFromText = require("../utils/extractName");
 const extractFormatPhoneNumber = require("../utils/extractFormatPhoneNumber");
 const extractEducation = require("../utils/extractEducation");
 const convertMonthYearToMMyyyy = require("../utils/convertMonthYearToMmyyyy");
+const extractExperience = require("../utils/extractExperience");
 
 // const CvParser = async (file) => {
 //   try {
@@ -71,19 +72,62 @@ const CvParser = async (rawText) => {
     const extractedPhone = extractFormatPhoneNumber(rawText);
     resume.addKey("phone", extractedPhone);
 
-    const extractedRawSkills = resume.getKey("rawSkills", "skills");
-    console.log("extractedrawskills: ", extractedRawSkills.toString());
+    const extractedRawSkills = resume.getKey("skills");
+    if (extractedRawSkills && extractedRawSkills.length !== 0) {
+      console.log("extractedrawskills: ", extractedRawSkills.toString());
+    }
     console.log("final parsed resume: ", resume.parts);
 
     const educationEntries = extractEducation(resume.getKey("educationParts"));
+    console.log("educationEntries: ", educationEntries);
+    const experienceEntries = extractExperience(
+      resume.getKey("experienceParts")
+    );
+    console.log("experienceEntries: ", experienceEntries);
 
-    const startDates = educationEntries.map((entry) => entry.startDate);
-    const convertedStartDate = convertMonthYearToMMyyyy(startDates.toString());
-    resume.addKey("eduStartDate", convertedStartDate);
+    // 2. Convert + add new fields
+    const convertedEducationEntries = educationEntries.map((entry) => ({
+      ...entry,
+      eduStartDate: convertMonthYearToMMyyyy(entry.eduStartDate),
+      eduEndDate: convertMonthYearToMMyyyy(entry.eduEndDate),
+    }));
+    console.log("convertedEducationEntries: ", convertedEducationEntries);
 
-    const endDates = educationEntries.map((entry) => entry.endDate);
-    const convertedEndDate = convertMonthYearToMMyyyy(endDates.toString());
-    resume.addKey("eduEndDate", convertedEndDate);
+    const convertedExperienceEntries = experienceEntries.map((entry) => ({
+      ...entry,
+      workStartDate: convertMonthYearToMMyyyy(entry.workStartDate),
+      workEndDate: convertMonthYearToMMyyyy(entry.workEndDate),
+    }));
+    console.log("convertedExperienceEntries: ", convertedExperienceEntries);
+
+    resume.addKey("educationEntries", convertedEducationEntries);
+    resume.addKey("experienceEntries", convertedExperienceEntries);
+
+    // const workStartDates = experienceEntries.map(
+    //   (entry) => entry.workStartDate
+    // );
+    // const convertedWorkStartDate = convertMonthYearToMMyyyy(
+    //   workStartDates.toString()
+    // );
+    // resume.addKey("expStartDate", convertedWorkStartDate);
+
+    // const workEndDates = experienceEntries.map((entry) => entry.workEndDate);
+    // const convertedWorkEndDate = convertMonthYearToMMyyyy(
+    //   workEndDates.toString()
+    // );
+    // resume.addKey("expEndDate", convertedWorkEndDate);
+
+    // const eduStartDates = educationEntries.map((entry) => entry.eduStartDate);
+    // const convertedEduStartDate = convertMonthYearToMMyyyy(
+    //   eduStartDates.toString()
+    // );
+    // resume.addKey("eduStartDate", convertedEduStartDate);
+
+    // const eduEndDates = educationEntries.map((entry) => entry.eduEndDate);
+    // const convertedEduEndDate = convertMonthYearToMMyyyy(
+    //   eduEndDates.toString()
+    // );
+    // resume.addKey("eduEndDate", convertedEduEndDate);
 
     return { success: true, data: resume.parts };
   } catch (error) {

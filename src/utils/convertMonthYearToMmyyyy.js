@@ -1,7 +1,24 @@
 function convertMonthYearToMMyyyy(dateStr) {
-  if (!dateStr) return null;
+  if (typeof dateStr !== "string") return null;
 
   const monthMap = {
+    // Shortened english
+    jan: "01",
+    feb: "02",
+    mar: "03",
+    apr: "04",
+    may: "05",
+    jun: "06",
+    jul: "07",
+    aug: "08",
+    sep: "09",
+    oct: "10",
+    nov: "11",
+    dec: "12",
+    // Shortened indo
+    agu: "08",
+    okt: "10",
+    des: "12",
     // Indonesian
     januari: "01",
     februari: "02",
@@ -30,16 +47,73 @@ function convertMonthYearToMMyyyy(dateStr) {
     december: "12",
   };
 
-  const [monthRaw, year] = dateStr.toLowerCase().split(" ");
-  if (!monthRaw || !year) return null;
+  // Normalize
+  const lower = dateStr.toLowerCase().trim();
 
-  let month = monthMap[monthRaw];
-  if (!month && monthRaw === "april") month = "04"; // shared word
-  if (!month && monthRaw === "september") month = "09";
-  if (!month && monthRaw === "november") month = "11";
+  // ✅ Handle MM/YYYY or M/YYYY
+  const slashMatch = lower.match(/^(\d{1,2})[\/\-](\d{4})$/);
+  if (slashMatch) {
+    let [_, monthStr, yearStr] = slashMatch;
+    if (!/^\d{4}$/.test(yearStr)) return null;
 
-  if (!month) return null;
+    // Pad single-digit month with 0
+    if (monthStr.length === 1) monthStr = "0" + monthStr;
+
+    return `${monthStr}${yearStr}`;
+  }
+
+  // Split by comma (optional), only use first part
+  const [monthYearPart] = lower.split(",");
+
+  // Split into words (assume "month year")
+  const parts = monthYearPart.trim().split(" ");
+  if (parts.length !== 2) return null;
+
+  const [monthName, year] = parts;
+  const month = monthMap[monthName];
+  if (!month || !/^\d{4}$/.test(year)) return null;
+
   return `${month}${year}`;
+
+  // const normalize = (input) => input.toLowerCase().trim();
+
+  // const parseSingle = (part) => {
+  //   if (!part || typeof part !== "string") return null;
+
+  //   const lower = part.toLowerCase().trim();
+
+  //   // Handle MM/YYYY or M/YYYY
+  //   const slashMatch = lower.match(/^(\d{1,2})[\/\-](\d{4})$/);
+  //   if (slashMatch) {
+  //     let [_, m, y] = slashMatch;
+  //     if (!/^\d{4}$/.test(y)) return null;
+  //     return (m.length === 1 ? "0" + m : m) + y;
+  //   }
+
+  //   // Handle "Month YYYY"
+  //   const words = lower.split(" ");
+  //   if (words.length !== 2) return null;
+
+  //   const [monthName, year] = words;
+  //   const month = monthMap[monthName];
+  //   if (!month || !/^\d{4}$/.test(year)) return null;
+
+  //   return `${month}${year}`;
+  // };
+
+  // const parts = dateStr.split(/\s?[–—-]\s?/); // Split on any dash type
+  // const startRaw = parts[0];
+  // const endRaw = parts[1];
+
+  // const start = parseSingle(startRaw);
+  // const endNormalized = normalize(endRaw || "");
+
+  // const isOngoing = ["present", "sekarang", "(expected)"].includes(
+  //   endNormalized
+  // );
+  // const end = isOngoing ? null : parseSingle(endRaw);
+
+  // return { start, end };
 }
 
 module.exports = convertMonthYearToMMyyyy;

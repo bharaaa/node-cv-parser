@@ -43,8 +43,8 @@ module.exports = {
     gpa: [gpaRegex],
     lastPosition: [positionRegex],
     skills: [],
-    eduStartDate: [],
-    eduEndDate: [],
+    educationEntries: [],
+    experienceEntries: []
   },
   inline: {},
   titles: {
