@@ -48,7 +48,7 @@ function extractExperience(experienceParts) {
       dateMatch,
     });
 
-    if (matchedPosition || dateMatch) {
+    if ((matchedPosition && matchedCompany)) {
       if (currentEntry) entries.push(currentEntry);
 
       currentEntry = {

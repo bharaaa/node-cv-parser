@@ -66,7 +66,6 @@ module.exports = [
   "Accenture",
   "Deloitte",
   "PwC",
-  "EY",
   "KPMG",
   "McKinsey & Company",
   "Boston Consulting Group",
