@@ -41,12 +41,12 @@ function extractExperience(experienceParts) {
         normalizeCompanyName(nextLine).includes(normalizeCompanyName(com))
       );
 
-    console.log({
-      line,
-      matchedPosition,
-      matchedCompany,
-      dateMatch,
-    });
+    // console.log({
+    //   line,
+    //   matchedPosition,
+    //   matchedCompany,
+    //   dateMatch,
+    // });
 
     if ((matchedPosition && matchedCompany)) {
       if (currentEntry) entries.push(currentEntry);

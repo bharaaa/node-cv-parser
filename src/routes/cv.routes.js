@@ -8,6 +8,7 @@ router
   .route("/")
   .get(cvController.getAllCV)
   .post(upload.single("file"), cvController.uploadCV); // POST /api/cv
+router.get("/latest", cvController.getLatestCV);
 router.get("/download/:id", cvController.downloadCV);
 router.post("/parse", upload.single("resume"), cvController.parseCV);
 router.get("/parse/:id", cvController.parseById);

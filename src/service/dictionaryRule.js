@@ -43,8 +43,9 @@ module.exports = {
     gpa: [gpaRegex],
     lastPosition: [positionRegex],
     skills: [],
+    skillLanguage: [],
     educationEntries: [],
-    experienceEntries: []
+    experienceEntries: [],
   },
   inline: {},
   titles: {
@@ -57,6 +58,7 @@ module.exports = {
     ],
     organizationParts: ["organization", "organisasi", "riwayat organisasi"],
     skillsParts: ["skills", "keahlian", "certificates & skills"],
+    skillLanguagesParts: ["bahasa", "language", "languages"],
     awardsParts: ["awards", "penghargaan"],
     // projects: ["project", "projects", "proyek"],
     certificateParts: ["certificate", "certificates", "sertifikat"],

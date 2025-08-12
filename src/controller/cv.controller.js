@@ -38,6 +38,24 @@ exports.getAllCV = async (req, res) => {
   }
 };
 
+exports.getLatestCV = async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM cv_db ORDER BY id desc limit 1"
+    );
+    // res.status(200).json(result.rows);
+
+    const insertedId = result.rows[0].id;
+    res.status(200).json({
+      message: "File uploaded successfully",
+      id: insertedId,
+    });
+  } catch (error) {
+    console.error("Get all error:", error);
+    res.status(500).send("Error fetching data.");
+  }
+};
+
 exports.downloadCV = async (req, res) => {
   const id = req.params.id;
 

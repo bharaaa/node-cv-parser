@@ -10,6 +10,7 @@ const extractFormatPhoneNumber = require("../utils/extractFormatPhoneNumber");
 const extractEducation = require("../utils/extractEducation");
 const convertMonthYearToMMyyyy = require("../utils/convertMonthYearToMmyyyy");
 const extractExperience = require("../utils/extractExperience");
+const extractSkillLanguagesFromText = require("../utils/extractSkillLanguage");
 
 // const CvParser = async (file) => {
 //   try {
@@ -67,7 +68,17 @@ const CvParser = async (rawText) => {
     resume.addKey("name", extractedname);
 
     const extractedSkills = extractSkillsFromText(rawText);
-    resume.addKey("skills", extractedSkills.join(", "));
+    resume.addKey("skills", extractedSkills);
+
+    const extractedSkillLanguages = extractSkillLanguagesFromText(
+      resume.getKey("skillLanguagesParts")
+    );
+    console.log(
+      "skilllanguagse parrrtttt brrr: ",
+      resume.getKey("skillLanguagesParts")
+    );
+    console.log("extractedSkillLanguages: ", extractedSkillLanguages);
+    resume.addKey("skillLanguage", extractedSkillLanguages);
 
     const extractedPhone = extractFormatPhoneNumber(rawText);
     resume.addKey("phone", extractedPhone);
