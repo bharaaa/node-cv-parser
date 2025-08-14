@@ -1,5 +1,6 @@
 const universityList = require("../service/helper/dictionary/education");
 const fieldOfStudyList = require("../service/helper/dictionary/fieldOfStudy");
+const degreeList = require("../service/helper/dictionary/degree");
 
 const gpaRegex = /\b(?:GPA|IPK)[:\s]*([0-4](?:\.\d{1,2})?)\b/i;
 const dateRangeRegex =
@@ -57,6 +58,15 @@ function extractEducation(educationParts) {
       currentEntry.fieldOfStudy = matchedField.en;
     }
 
+    const matchedDegree = degreeList.find(
+      (deg) =>
+        line.toLowerCase().includes(deg.id.toLowerCase()) ||
+        line.toLowerCase().includes(deg.en.toLowerCase())
+    );
+    if (matchedDegree) {
+      currentEntry.degree = matchedDegree.en;
+    }
+
     // Check for GPA
     const gpaMatch = line.match(gpaRegex);
     if (gpaMatch) {
@@ -84,7 +94,8 @@ function extractEducation(educationParts) {
     currentEntry.institution ||
     currentEntry.fieldOfStudy ||
     currentEntry.eduStartDate ||
-    currentEntry.grade
+    currentEntry.grade ||
+    currentEntry.degree
   ) {
     entries.push(currentEntry);
   }
