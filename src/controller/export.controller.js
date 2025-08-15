@@ -7,72 +7,80 @@ const CvParser = require("../service/cvParser.service");
 const mapCV = require("../service/cvMapping.service");
 
 exports.exportExtractedToExcel = async (req, res) => {
-  const { id } = req.params;
+  const editedProfile = req.body;
+
+  console.log("editedProfile from frontend: ", editedProfile);
+
+  // Helper to set value + wrap text
+  const setCellValue = (cell, value) => {
+    cell.value = value || "";
+    cell.alignment = { wrapText: true, vertical: "top" };
+  };
 
   try {
-    const result = await pool.query(
-      "SELECT filename, data FROM cv_db WHERE id = $1",
-      [id]
-    );
-
-    if (!result.rows.length) {
-      return res.status(404).json({ success: false, error: "CV not found" });
-    }
-
-    const { filename, data } = result.rows[0];
-    const tempPath = path.join(os.tmpdir(), `${Date.now()}-${filename}`);
-    fs.writeFileSync(tempPath, data);
-
-    const parsed = await CvParser(tempPath);
-    if (!parsed.success) {
-      throw new Error(parsed.error || "Parsing failed");
-    }
-
-    const mapped = mapCV(parsed.data, parsed.rawText || "");
-
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Extracted CV");
-
-    sheet.columns = [
-      { header: "Field", key: "field", width: 30 },
-      { header: "Value", key: "value", width: 50 },
-    ];
-
-    const flatFields = {
-      ...mapped.personalInfo,
-      ...mapped.formalEducation,
-      ...mapped.informalEducation,
-      ...mapped.careerInfo,
-    };
-
-    const rows = Object.entries(flatFields).map(([field, value]) => ({
-      field,
-      value: Array.isArray(value) ? value.join(", ") : value,
-    }));
-
-    sheet.addRows(rows);
-
-    const excelPath = path.join(os.tmpdir(), `resume_${id}.xlsx`);
-    await workbook.xlsx.writeFile(excelPath);
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=resume_${id}.xlsx`
+    await workbook.xlsx.readFile(
+      path.join(__dirname, "../../asset/IDB_Member_CV_2025_Name.xlsx")
     );
+    const sheet = workbook.getWorksheet(1);
+
+    // --- Basic fields ---
+    setCellValue(sheet.getCell("C7"), editedProfile.fullname);
+    setCellValue(sheet.getCell("G8"), editedProfile.email);
+    setCellValue(
+      sheet.getCell("C11"),
+      `+${editedProfile.areaCode || ""} ${editedProfile.phoneNumber || ""}`
+    );
+    setCellValue(sheet.getCell("C12"), editedProfile.domicile);
+
+    // --- Career ---
+    const careerStartRow = 24;
+    editedProfile.career?.forEach((career, i) => {
+      const rowIdx = careerStartRow + i;
+      setCellValue(sheet.getCell(`B${rowIdx}`), career.startDate);
+      setCellValue(sheet.getCell(`C${rowIdx}`), career.endDate);
+      setCellValue(sheet.getCell(`G${rowIdx}`), career.position);
+      setCellValue(sheet.getCell(`E${rowIdx}`), career.name);
+      setCellValue(sheet.getCell(`I${rowIdx}`), career.responsibility);
+    });
+
+    // --- Education ---
+    const eduStartRow = 16;
+    editedProfile.edu?.forEach((edu, i) => {
+      const rowIdx = eduStartRow + i;
+      setCellValue(sheet.getCell(`D${rowIdx}`), edu.institution);
+      setCellValue(sheet.getCell(`G${rowIdx}`), edu.fieldOfStudy);
+      setCellValue(sheet.getCell(`H${rowIdx}`), edu.grade);
+      setCellValue(sheet.getCell(`I${rowIdx}`), edu.degree);
+    });
+
+    // --- Skills ---
+    const skillStartRow = 99;
+    editedProfile.skill?.forEach((skill, i) => {
+      const rowIdx = skillStartRow + i;
+      setCellValue(sheet.getCell(`B${rowIdx}`), skill.skillName);
+    });
+
+    // --- Skill Languages ---
+    const skillLangStartRow = 48;
+    editedProfile.skillLanguage?.forEach((lang, i) => {
+      if (lang.skillName === "English" || lang.skillName === "Korean") {
+        const rowIdx = skillLangStartRow + i;
+        setCellValue(sheet.getCell(`B${rowIdx}`), lang.skillName);
+      }
+    });
+
+    // Send as download
     res.setHeader(
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
+    res.setHeader("Content-Disposition", "attachment; filename=filled_cv.xlsx");
 
-    const stream = fs.createReadStream(excelPath);
-    stream.pipe(res);
-
-    stream.on("end", () => {
-      fs.unlinkSync(tempPath);
-      fs.unlinkSync(excelPath);
-    });
-  } catch (err) {
-    console.error("Backend Excel Export Error:", err);
-    res.status(500).json({ success: false, error: err.message });
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error("Error generating CV Excel:", error);
+    res.status(500).json({ error: "Failed to generate CV Excel" });
   }
 };

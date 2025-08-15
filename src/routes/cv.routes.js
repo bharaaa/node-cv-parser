@@ -12,6 +12,6 @@ router.get("/latest", cvController.getLatestCV);
 router.get("/download/:id", cvController.downloadCV);
 router.post("/parse", upload.single("resume"), cvController.parseCV);
 router.get("/parse/:id", cvController.parseById);
-router.get("/export/:id", exportController.exportExtractedToExcel);
+router.post("/export", exportController.exportExtractedToExcel);
 
 module.exports = router;
