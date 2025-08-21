@@ -19,7 +19,8 @@ exports.uploadCV = async (req, res) => {
     );
 
     const insertedId = result.rows[0].id;
-    res.status(200).send(`File uploaded with ID: ${insertedId}`);
+    // res.status(200).send(`File uploaded with ID: ${insertedId}`);
+    return res.status(200).json({ id: insertedId });
   } catch (err) {
     console.error("Upload error:", err);
     res.status(500).send("Upload failed");
@@ -32,24 +33,6 @@ exports.getAllCV = async (req, res) => {
       "SELECT * FROM cv_db ORDER BY uploaded_at DESC"
     );
     res.status(200).json(result.rows);
-  } catch (error) {
-    console.error("Get all error:", error);
-    res.status(500).send("Error fetching data.");
-  }
-};
-
-exports.getLatestCV = async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT * FROM cv_db ORDER BY id desc limit 1"
-    );
-    // res.status(200).json(result.rows);
-
-    const insertedId = result.rows[0].id;
-    res.status(200).json({
-      message: "File uploaded successfully",
-      id: insertedId,
-    });
   } catch (error) {
     console.error("Get all error:", error);
     res.status(500).send("Error fetching data.");
