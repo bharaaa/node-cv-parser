@@ -5,6 +5,7 @@ const ExcelJS = require("exceljs");
 const pool = require("../config/db");
 const CvParser = require("../service/cvParser.service");
 const mapCV = require("../service/cvMapping.service");
+const exportFormatMonthYear = require("../utils/exportFormatMonthYear");
 
 exports.exportExtractedToExcel = async (req, res) => {
   const editedProfile = req.body;
@@ -37,8 +38,14 @@ exports.exportExtractedToExcel = async (req, res) => {
     const careerStartRow = 24;
     editedProfile.career?.forEach((career, i) => {
       const rowIdx = careerStartRow + i;
-      setCellValue(sheet.getCell(`B${rowIdx}`), career.startDate);
-      setCellValue(sheet.getCell(`C${rowIdx}`), career.endDate);
+      setCellValue(
+        sheet.getCell(`B${rowIdx}`),
+        exportFormatMonthYear(career.startDate, "slash")
+      );
+      setCellValue(
+        sheet.getCell(`C${rowIdx}`),
+        exportFormatMonthYear(career.endDate, "slash")
+      );
       setCellValue(sheet.getCell(`G${rowIdx}`), career.position);
       setCellValue(sheet.getCell(`E${rowIdx}`), career.name);
       setCellValue(sheet.getCell(`I${rowIdx}`), career.responsibility);
@@ -48,6 +55,13 @@ exports.exportExtractedToExcel = async (req, res) => {
     const eduStartRow = 16;
     editedProfile.edu?.forEach((edu, i) => {
       const rowIdx = eduStartRow + i;
+
+      const start = exportFormatMonthYear(edu.startDate, "dash");
+      const end = exportFormatMonthYear(edu.endDate, "dash");
+
+      const dateRange = `${start} ~ ${end}`;
+
+      setCellValue(sheet.getCell(`B${rowIdx}`), dateRange);
       setCellValue(sheet.getCell(`D${rowIdx}`), edu.institution);
       setCellValue(sheet.getCell(`G${rowIdx}`), edu.fieldOfStudy);
       setCellValue(sheet.getCell(`H${rowIdx}`), edu.grade);
