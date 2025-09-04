@@ -3,7 +3,6 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const CvParser = require("../service/cvParser.service");
-const mapCV = require("../service/cvMapping.service");
 const extractTextFromPDF = require("../utils/extractTextFromPdf");
 
 exports.uploadCV = async (req, res) => {

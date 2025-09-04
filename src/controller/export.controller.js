@@ -1,10 +1,5 @@
-const fs = require("fs");
-const os = require("os");
 const path = require("path");
 const ExcelJS = require("exceljs");
-const pool = require("../config/db");
-const CvParser = require("../service/cvParser.service");
-const mapCV = require("../service/cvMapping.service");
 const exportFormatMonthYear = require("../utils/exportFormatMonthYear");
 
 exports.exportExtractedToExcel = async (req, res) => {
